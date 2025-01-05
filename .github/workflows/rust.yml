@@ -52,6 +52,7 @@ jobs:
           mkdir artifact
           # Move the built binary where you want it
           mv "${BIN_OUTPUT}" "./artifact/basiclings${BIN_SUFFIX}"
+          mv "LICENSE" "./artifact/LICENSE.basiclings"
       - name: Build Autotester
         shell: bash
         run: |
@@ -62,6 +63,7 @@ jobs:
             make
             cd ../../../
             mv "CEmu/tests/autotester/autotester${BIN_SUFFIX}" "./artifact/autotester${BIN_SUFFIX}"
+            mv "CEmu/LICENSE" "./artifact/LICENSE.autotester"
       - name: Upload
         uses: actions/upload-artifact@v4.5.0
         with:

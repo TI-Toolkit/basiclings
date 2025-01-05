@@ -1,0 +1,20 @@
+[package]
+name = "basiclings"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+deku = "0.18.1"
+fancy-regex = "0.14.0"
+fuzzy-matcher = "0.3.7"
+inquire = { version = "0.7.5", features = ["editor"] }
+markdown = "1.0.0-alpha.21"
+rust-embed = "8.4.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tempfile = "3"
+tifloats = "2"
+titokens = "0.2.1"
+
+[features]
+debug-tools = []

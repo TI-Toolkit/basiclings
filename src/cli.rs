@@ -192,6 +192,8 @@ impl UserInterface {
                     + &lesson_data.starting_program
             });
 
+        println!("{}", savings_message);
+
         if let Ok(true) = Confirm::new("Would you like to open your attempt?").with_default(true).prompt() {
             let result = edit(boilerplate);
             if let Ok(raw_text) = result {

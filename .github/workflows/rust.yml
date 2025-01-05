@@ -62,12 +62,8 @@ jobs:
             make
             cd ../../../
             mv "CEmu/tests/autotester/autotester${BIN_SUFFIX}" "./artifact/autotester${BIN_SUFFIX}"
-      - name: Package
-        shell: bash
-        run: |
-            zip "artifact-${{ matrix.name }}.zip" ./artifact/*
       - name: Upload
         uses: actions/upload-artifact@v4.5.0
         with:
-          name: "artifact-${{ matrix.name }}.zip"
-          path: "artifact-${{ matrix.name }}.zip"
+          name: "build-${{ matrix.name }}"
+          path: "artifact/"

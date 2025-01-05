@@ -15,7 +15,7 @@ Closing delimiter optimizations are among the most plentiful optimizations in re
   "required_savings": 2,
   "tests": [
     {
-      "regex": "\\.2sum\\(L1\\->A[\\n:]If B or A>L1\\(2[\\n:]Disp A"
+      "regex": "((\\.2|5^^-1)sum\\(L1\\|sum\\(L1/5|sum\\((\\.2|5^^-1)L1)->A[\\n:]If B or A(ns)?>L1\\(2[\\n:]Disp A(ns)?"
     }
   ]
 }

@@ -271,24 +271,17 @@ impl TestRunner {
         let folder = tempfile::tempdir().map_err(TestError::Io)?;
         let folder_path = folder.path();
 
-        let autotester_config_path = self.initialize_cemu_test(
-            &folder_path.canonicalize().map_err(TestError::Io)?,
-            program,
-            inputs,
-            outputs,
-        )?;
+        let autotester_config_path =
+            self.initialize_cemu_test(folder_path, program, inputs, outputs)?;
 
-        let autotester_path = if cfg!(debug_assertions) {
+        let autotester_path =
             env::current_dir()
-        } else {
-            env::current_exe()
-        }
-        .map_err(TestError::Io)?
-        .join(if cfg!(target_os = "windows") {
-            "autotester.exe"
-        } else {
-            "autotester"
-        });
+                .map_err(TestError::Io)?
+                .join(if cfg!(target_os = "windows") {
+                    "autotester.exe"
+                } else {
+                    "autotester"
+                });
 
         let cemu_status = Command::new(autotester_path)
             .arg(&autotester_config_path)

@@ -3,10 +3,11 @@ use std::{
     fs, io,
 };
 
+use edit::edit;
 use fuzzy_matcher::{skim::SkimMatcherV2, FuzzyMatcher};
 use inquire::{
     validator::{StringValidator, Validation},
-    Autocomplete, Confirm, CustomUserError, Editor, Select, Text,
+    Autocomplete, Confirm, CustomUserError, Select, Text,
 };
 use markdown::mdast::{Code, Node};
 use serde::{Deserialize, Serialize};
@@ -191,51 +192,49 @@ impl UserInterface {
                     + &lesson_data.starting_program
             });
 
-        let result = Editor::new(&savings_message)
-            .with_predefined_text(&boilerplate)
-            .with_file_extension(".8xp.txt")
-            .prompt();
+        if let Ok(true) = Confirm::new("Would you like to open your attempt?").with_default(true).prompt() {
+            let result = edit(boilerplate);
+            if let Ok(raw_text) = result {
+                if raw_text.trim() == "" {
+                    return;
+                }
 
-        if let Ok(raw_text) = result {
-            if raw_text.trim() == "" {
-                return;
-            }
+                self.save.attempts.insert(lesson_id, raw_text.clone());
 
-            self.save.attempts.insert(lesson_id, raw_text.clone());
+                let tokens_struct = process_submission(raw_text);
+                let tokens = tokens_struct.clone().collect::<Vec<_>>();
+                let byte_count: usize = byte_count(&tokens);
 
-            let tokens_struct = process_submission(raw_text);
-            let tokens = tokens_struct.clone().collect::<Vec<_>>();
-            let byte_count: usize = byte_count(&tokens);
+                println!("{} tokens, {} bytes.", tokens.len(), byte_count);
 
-            println!("{} tokens, {} bytes.", tokens.len(), byte_count);
+                let byte_threshold = lesson_data.byte_threshold();
+                if byte_count > byte_threshold {
+                    println!("Too large: target is {} bytes", byte_threshold);
+                    self.last_attempt = Some(lesson_id);
+                } else {
+                    println!("Testing...");
+                    match self
+                        .test_runner
+                        .run_tests(tokens_struct, &lesson_data.tests)
+                    {
+                        Err(test_error) => {
+                            eprintln!("{}", test_error);
+                            std::process::exit(1)
+                        }
 
-            let byte_threshold = lesson_data.byte_threshold();
-            if byte_count > byte_threshold {
-                println!("Too large: target is {} bytes", byte_threshold);
-                self.last_attempt = Some(lesson_id);
-            } else {
-                println!("Testing...");
-                match self
-                    .test_runner
-                    .run_tests(tokens_struct, &lesson_data.tests)
-                {
-                    Err(test_error) => {
-                        eprintln!("{}", test_error);
-                        std::process::exit(1)
-                    }
-
-                    Ok(ProgramTestResult::Fail(reason)) => {
-                        println!("{}", reason);
-                        self.last_attempt = Some(lesson_id);
-                    }
-                    Ok(ProgramTestResult::Pass) => {
-                        self.complete_lesson(lesson_id);
-                        self.last_attempt = None;
+                        Ok(ProgramTestResult::Fail(reason)) => {
+                            println!("{}", reason);
+                            self.last_attempt = Some(lesson_id);
+                        }
+                        Ok(ProgramTestResult::Pass) => {
+                            self.complete_lesson(lesson_id);
+                            self.last_attempt = None;
+                        }
                     }
                 }
-            }
 
-            self.save();
+                self.save();
+            }
         }
     }
 

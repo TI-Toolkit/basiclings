@@ -49,9 +49,9 @@ jobs:
           # The built binary output location
           BIN_OUTPUT="target/${{ matrix.target }}/release/basiclings${BIN_SUFFIX}"
           
-          mkdir "artifact-${{ matrix.name }}"
+          mkdir artifact
           # Move the built binary where you want it
-          mv "${BIN_OUTPUT}" "./artifact-${{ matrix.name }}/basiclings${BIN_SUFFIX}"
+          mv "${BIN_OUTPUT}" "./artifact/basiclings${BIN_SUFFIX}"
       - name: Build Autotester
         shell: bash
         run: |
@@ -61,11 +61,11 @@ jobs:
             cd ../tests/autotester
             make
             cd ../../../
-            mv "CEmu/tests/autotester/autotester${BIN_SUFFIX}" "./artifact-${{ matrix.name }}/autotester${BIN_SUFFIX}"
+            mv "CEmu/tests/autotester/autotester${BIN_SUFFIX}" "./artifact/autotester${BIN_SUFFIX}"
       - name: Package
         shell: bash
         run: |
-            zip "./artifact-${{ matrix.name }}"
+            zip "artifact-${{ matrix.name }}.zip" ./artifact/*
       - name: Upload
         uses: actions/upload-artifact@v4.5.0
         with:

@@ -283,8 +283,13 @@ impl TestRunner {
         } else {
             env::current_exe()
         }
-            .map_err(TestError::Io)?
-            .join("autotester");
+        .map_err(TestError::Io)?
+        .join(if cfg!(target_os = "windows") {
+            "autotester.exe"
+        } else {
+            "autotester"
+        });
+
         let cemu_status = Command::new(autotester_path)
             .arg(&autotester_config_path)
             .current_dir(folder_path)

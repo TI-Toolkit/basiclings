@@ -1,0 +1,72 @@
+name: Build
+on: [push]
+jobs:
+  build:
+    # Set the job to run on the platform specified by the matrix below
+    runs-on: ${{ matrix.runner }}
+ 
+    # Define the build matrix for cross-compilation
+    strategy:
+      matrix:
+        include:
+          - name: linux-amd64
+            runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - name: win-amd64
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+          - name: macos-amd64
+            runner: macos-latest
+            target: x86_64-apple-darwin
+          - name: macos-arm64
+            runner: macos-latest
+            target: aarch64-apple-darwin
+ 
+    # The steps to run for each matrix item
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+ 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: "${{ matrix.target }}"
+ 
+      - name: Setup Cache
+        uses: Swatinem/rust-cache@v2
+ 
+      - name: Build Binary
+        run: cargo build --verbose --locked --release --target ${{ matrix.target }}
+ 
+      - name: Move Binary
+        shell: bash
+        run: |
+          BIN_SUFFIX=""
+          if [[ "${{ matrix.runner }}" == "windows-latest" ]]; then
+            BIN_SUFFIX=".exe"
+          fi
+ 
+          # The built binary output location
+          BIN_OUTPUT="target/${{ matrix.target }}/release/basiclings${BIN_SUFFIX}"
+          
+          mkdir "artifact-${{ matrix.name }}"
+          # Move the built binary where you want it
+          mv "${BIN_OUTPUT}" "./artifact-${{ matrix.name }}/basiclings${BIN_SUFFIX}"
+      - name: Build Autotester
+        shell: bash
+        run: |
+            git clone https://github.com/CE-Programming/CEmu.git
+            cd CEmu/core
+            make
+            cd ../tests/autotester
+            make
+            cd ../../../
+            mv "CEmu/tests/autotester/autotester${BIN_SUFFIX}" "./artifact-${{ matrix.name }}/autotester${BIN_SUFFIX}"
+      - name: Package
+        shell: bash
+        run: |
+            zip "./artifact-${{ matrix.name }}"
+      - name: Upload
+        uses: actions/upload-artifact@v4.5.0
+        with:
+          name: "artifact-${{ matrix.name }}.zip"

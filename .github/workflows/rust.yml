@@ -65,5 +65,5 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4.5.0
         with:
-          name: "build-${{ matrix.name }}"
+          name: "basiclings-${{ matrix.name }}"
           path: "artifact/"

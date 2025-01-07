@@ -8,7 +8,7 @@ deku = "0.18.1"
 edit = "0.1.5"
 fancy-regex = "0.14.0"
 fuzzy-matcher = "0.3.7"
-inquire = { version = "0.7.5", features = ["editor"] }
+inquire = "0.7.5"
 markdown = "1.0.0-alpha.21"
 rust-embed = "8.4.0"
 serde = { version = "1.0", features = ["derive"] }
@@ -17,5 +17,3 @@ tempfile = "3"
 tifloats = "2"
 titokens = "0.2.1"
 
-[features]
-debug-tools = []

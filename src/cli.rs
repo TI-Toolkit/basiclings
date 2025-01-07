@@ -88,7 +88,7 @@ impl UserInterface {
                 "progress" => self.show_progress_report(),
                 "review" => {
                     if let Some(next_lesson_id) = self.select_lesson(&self.save.completed_lessons) {
-                        todo!()
+                        self.execute_lesson(next_lesson_id);
                     } else {
                         eprintln!("Operation failed.")
                     }
@@ -141,6 +141,9 @@ impl UserInterface {
             Node::Code(Code {
                 lang: Some(lang), ..
             }) if lang == "json" => return,
+            Node::Code(Code {
+                value, ..
+            }) => println!("{}", value),
             _ => {}
         }
 

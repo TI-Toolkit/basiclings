@@ -196,7 +196,7 @@ impl AutotesterConfig {
             },
             sequence: vec![
                 "action|launch".to_owned(),
-                "delay|2000".to_owned(),
+                "delay|1500".to_owned(),
                 "key|on".to_owned(),
             ],
             transfer_files: vec![],

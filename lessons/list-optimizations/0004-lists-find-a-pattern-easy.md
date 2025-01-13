@@ -1,5 +1,5 @@
 # Find a Pattern (easy)
-List constants often have patterns. Ask "what do the elements of this list have in common?" or "can I express this as a sequence?".
+List constants often have exploitable patterns. Ask "what do the elements of this list have in common?" and "can I express this as a sequence?".
 
 _Hint: Remember that the color constants are just numbers. What operations can you do on lists of numbers?_
 
